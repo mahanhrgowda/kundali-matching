@@ -156,6 +156,28 @@ area_of_life = {
     "Nadi Koot": "Progeny"
 }
 
+area_emojis = {
+    "Aptitude": "📚",
+    "Amenability": "🤝",
+    "Compassion": "💖",
+    "Chemistry": "⚗️",
+    "Affection": "❤️",
+    "Temperament": "😌",
+    "Love": "💑",
+    "Progeny": "👪"
+}
+
+guna_emojis = {
+    "Varna Koot": "🧘‍♀️",
+    "Vashya Koot": "🐾",
+    "Tara Koot": "🌟",
+    "Yoni Koot": "🐯",
+    "Graha Maitri": "🧠",
+    "Gana Koot": "😊",
+    "Bhakoot Koot": "👨‍👩‍👧‍👦",
+    "Nadi Koot": "👶"
+}
+
 max_points = {
     "Varna Koot": 1,
     "Vashya Koot": 2,
@@ -283,55 +305,55 @@ def calculate_guna_milan(n_b, r_b, n_g, r_g):
     v_b = varna_rashi[r_b]
     v_g = varna_rashi[r_g]
     score = varna_score(r_b, r_g)
-    data.append({"#": i, "Guna": "Varna Koot", "Girl": varna_names[v_b], "Boy": varna_names[v_g], "Obtained Point": score, "Maximum Point": max_points["Varna Koot"], "Area Of Life": area_of_life["Varna Koot"]})
+    data.append({"#": i, "Guna": f"{guna_emojis['Varna Koot']} Varna Koot", "Girl 👰": varna_names[v_b], "Boy 🤵": varna_names[v_g], "Obtained Point 🎯": score, "Maximum Point 📈": max_points["Varna Koot"], "Area Of Life 🌍": area_of_life["Varna Koot"]})
     i += 1
 
     # Vashya
     vb = vashya_types[r_b]
     vg = vashya_types[r_g]
     score = vashya_score(r_b, r_g)
-    data.append({"#": i, "Guna": "Vashya Koot", "Girl": vashya_names[vb], "Boy": vashya_names[vg], "Obtained Point": score, "Maximum Point": max_points["Vashya Koot"], "Area Of Life": area_of_life["Vashya Koot"]})
+    data.append({"#": i, "Guna": f"{guna_emojis['Vashya Koot']} Vashya Koot", "Girl 👰": vashya_names[vb], "Boy 🤵": vashya_names[vg], "Obtained Point 🎯": score, "Maximum Point 📈": max_points["Vashya Koot"], "Area Of Life 🌍": area_of_life["Vashya Koot"]})
     i += 1
 
     # Tara
     score = tara_score(n_b, n_g)
-    data.append({"#": i, "Guna": "Tara Koot", "Girl": nak_names[n_b-1], "Boy": nak_names[n_g-1], "Obtained Point": score, "Maximum Point": max_points["Tara Koot"], "Area Of Life": area_of_life["Tara Koot"]})
+    data.append({"#": i, "Guna": f"{guna_emojis['Tara Koot']} Tara Koot", "Girl 👰": nak_names[n_b-1], "Boy 🤵": nak_names[n_g-1], "Obtained Point 🎯": score, "Maximum Point 📈": max_points["Tara Koot"], "Area Of Life 🌍": area_of_life["Tara Koot"]})
     i += 1
 
     # Yoni
     y_b = yoni_map[n_b]
     y_g = yoni_map[n_g]
     score = yoni_score(n_b, n_g)
-    data.append({"#": i, "Guna": "Yoni Koot", "Girl": yoni_names[y_b], "Boy": yoni_names[y_g], "Obtained Point": score, "Maximum Point": max_points["Yoni Koot"], "Area Of Life": area_of_life["Yoni Koot"]})
+    data.append({"#": i, "Guna": f"{guna_emojis['Yoni Koot']} Yoni Koot", "Girl 👰": yoni_names[y_b], "Boy 🤵": yoni_names[y_g], "Obtained Point 🎯": score, "Maximum Point 📈": max_points["Yoni Koot"], "Area Of Life 🌍": area_of_life["Yoni Koot"]})
     i += 1
 
     # Graha Maitri
     lb = rashi_lords[r_b]
     lg = rashi_lords[r_g]
     score = graha_maitri_score(r_b, r_g)
-    data.append({"#": i, "Guna": "Graha Maitri", "Girl": planet_names[lb], "Boy": planet_names[lg], "Obtained Point": score, "Maximum Point": max_points["Graha Maitri"], "Area Of Life": area_of_life["Graha Maitri"]})
+    data.append({"#": i, "Guna": f"{guna_emojis['Graha Maitri']} Graha Maitri", "Girl 👰": planet_names[lb], "Boy 🤵": planet_names[lg], "Obtained Point 🎯": score, "Maximum Point 📈": max_points["Graha Maitri"], "Area Of Life 🌍": area_of_life["Graha Maitri"]})
     i += 1
 
     # Gana
     gb = gana_nak[n_b-1]
     gg = gana_nak[n_g-1]
     score = gana_score(n_b, n_g)
-    data.append({"#": i, "Guna": "Gana Koot", "Girl": gana_names[gb-1], "Boy": gana_names[gg-1], "Obtained Point": score, "Maximum Point": max_points["Gana Koot"], "Area Of Life": area_of_life["Gana Koot"]})
+    data.append({"#": i, "Guna": f"{guna_emojis['Gana Koot']} Gana Koot", "Girl 👰": gana_names[gb-1], "Boy 🤵": gana_names[gg-1], "Obtained Point 🎯": score, "Maximum Point 📈": max_points["Gana Koot"], "Area Of Life 🌍": area_of_life["Gana Koot"]})
     i += 1
 
     # Bhakoot
     score = bhakoot_score(r_b, r_g)
-    data.append({"#": i, "Guna": "Bhakoot Koot", "Girl": rashi_names[r_b], "Boy": rashi_names[r_g], "Obtained Point": score, "Maximum Point": max_points["Bhakoot Koot"], "Area Of Life": area_of_life["Bhakoot Koot"]})
+    data.append({"#": i, "Guna": f"{guna_emojis['Bhakoot Koot']} Bhakoot Koot", "Girl 👰": rashi_names[r_b], "Boy 🤵": rashi_names[r_g], "Obtained Point 🎯": score, "Maximum Point 📈": max_points["Bhakoot Koot"], "Area Of Life 🌍": area_of_life["Bhakoot Koot"]})
     i += 1
 
     # Nadi
     na_b = nadi_nak[n_b-1]
     na_g = nadi_nak[n_g-1]
     score = nadi_score(n_b, n_g)
-    data.append({"#": i, "Guna": "Nadi Koot", "Girl": nadi_names[na_b-1], "Boy": nadi_names[na_g-1], "Obtained Point": score, "Maximum Point": max_points["Nadi Koot"], "Area Of Life": area_of_life["Nadi Koot"]})
+    data.append({"#": i, "Guna": f"{guna_emojis['Nadi Koot']} Nadi Koot", "Girl 👰": nadi_names[na_b-1], "Boy 🤵": nadi_names[na_g-1], "Obtained Point 🎯": score, "Maximum Point 📈": max_points["Nadi Koot"], "Area Of Life 🌍": area_of_life["Nadi Koot"]})
 
     df = pd.DataFrame(data)
-    total = df["Obtained Point"].sum()
+    total = df["Obtained Point 🎯"].sum()
     return df, total
 
 # Manglik with exceptions
@@ -445,9 +467,17 @@ if st.button("Calculate Compatibility 💫"):
             st.warning("Manglik mismatch! ⚠️ Remedies advised to balance energies. 🛡️")
         
         df, total = calculate_guna_milan(b_nak, b_r, g_nak, g_r)
+        df['Obtained Point 🎯'] = df['Obtained Point 🎯'].apply(lambda x: int(x) if x == int(x) else x)
+        df['Area Of Life 🌍'] = df['Area Of Life 🌍'].apply(lambda x: f"{area_emojis.get(x, '')} {x}")
         st.write("### Guna Milan (Ashtakoot Points) 📊🌟")
         st.table(df)
         st.write(f"**Total Guna Milan Points: {total}/36 💖**")
+        
+        nadi_score_val = df.loc[df['Guna'] == f"{guna_emojis['Nadi Koot']} Nadi Koot", 'Obtained Point 🎯'].values[0]
+        if nadi_score_val == 0:
+            st.warning("Union is not recommended due to the presence of Nadi Maha Dosha. ⚠️")
+            st.subheader("What is Nadi Dosha? 🔍")
+            st.write("Nadi Dosha occurs when the Nadi (energy type) of the bride and groom is the same in Vedic astrology's Ashtakoota matching system. It is considered a significant dosha that can lead to health problems, issues with progeny, marital discord, and even severe consequences like early death of one partner. Nadis are categorized into Adya (Vata), Madhya (Pitta), and Antya (Kapha), representing bio-energies.")
         
         if total >= 28:
             st.success("Excellent compatibility! Stars align perfectly! 🌟✨⭐")
@@ -472,18 +502,25 @@ if st.button("Calculate Compatibility 💫"):
         }
 
         for index, row in df.iterrows():
-            koota = row["Guna"]
-            score = row["Obtained Point"]
+            koota = row["Guna"].split(' ', 1)[1]  # Remove emoji from key
+            score = row["Obtained Point 🎯"]
             exp = explanations.get(koota, "Cosmic mystery! 🔮")
-            st.markdown(f"**{koota} ({score}/{row['Maximum Point']}) 🎪:** {exp}")
+            st.markdown(f"**{row['Guna']} ({score}/{row['Maximum Point 📈']}) 🎪:** {exp}")
         
         # Remedies
-        if total < 18 or not mang_compat:
+        if total < 18 or not mang_compat or nadi_score_val == 0:
             st.header("Suggested Remedies 🛡️🙏")
             st.write("Stars guide, but rituals heal! ✨")
-            st.write("- Manglik Puja or Kumbh Vivah for fiery balance. 🔥🛡️")
-            st.write("- Nadi Shanti for energy harmony. ⚡🕉️")
-            st.write("- Chant Hanuman Chalisa Tuesdays. 🐒📿")
+            if not mang_compat:
+                st.write("- Manglik Puja or Kumbh Vivah for fiery balance. 🔥🛡️")
+            if nadi_score_val == 0:
+                st.write("- Nadi Shanti Puja or Nadi Dosha Nivaran Puja to mitigate the dosha. ⚡🕉️")
+                st.write("- Chant Maha Mrityunjaya Mantra daily for health and harmony. 📿")
+                st.write("- Donate gold, grains, clothes to Brahmins or needy. 🎁")
+                st.write("- Visit sacred places like temples dedicated to Lord Vishnu. 🛕")
+                st.write("- Perform spiritual practices like meditation and seek blessings from gurus. 🧘‍♂️")
+                st.write("- Wear recommended gemstones after consulting an astrologer. 💎")
+            st.write("- Chant Hanuman Chalisa on Tuesdays. 🐒📿")
             st.write("- Consult a guru for personalized mantras. 👩‍🏫🔮")
         
         # Export
