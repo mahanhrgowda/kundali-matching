@@ -235,10 +235,15 @@ def get_astro_details(year, month, day, hour_local, min_local, sec_local, tz_str
     eps = 23.439281 - 0.0000004 * (d / 36525)
     lst = get_lst(jd, lon)
     ra = lst
-    tan_lagna = sin_d(ra) / (cos_d(ra) * sin_d(eps) + tan_d(lat) * cos_d(eps))
-    lagna_trop = mod360(math.degrees(math.atan(tan_lagna)))
-    if cos_d(ra) < 0:
+    y = -cos_d(ra)
+    x = sin_d(ra) * cos_d(eps) + tan_d(lat) * sin_d(eps)
+    lagna_trop = atan2_d(y, x)
+    lagna_trop = mod360(lagna_trop)
+    if lagna_trop < 180:
         lagna_trop += 180
+    else:
+        lagna_trop -= 180
+    lagna_trop = mod360(lagna_trop)
     nirayana_lagna = mod360(lagna_trop - ayanamsa)
    
     # Planetary positions
