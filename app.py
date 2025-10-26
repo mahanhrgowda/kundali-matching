@@ -376,6 +376,18 @@ dasha_years = [7,20,6,10,7,18,16,19,17]  # Corresponding years
 nak_lords = [0,1,2,3,4,5,6,7,8] * 3  # Nak to dasha lord index
 lord_names = {0:'Ketu',1:'Venus',2:'Sun',3:'Moon',4:'Mars',5:'Rahu',6:'Jupiter',7:'Saturn',8:'Mercury'}
 
+mahadasha_predictions = {
+    'Ketu': "Ketu Mahadasha often brings spiritual growth and detachment from the material world, but can also present challenges in career, relationships, and health.",
+    'Venus': "Venus Mahadasha emphasizes luxury, beauty, relationships, wealth, and creativity, potentially bringing prosperity but also risks of extravagance or losses if afflicted.",
+    'Sun': "Sun Mahadasha enhances leadership, confidence, career success, and health, but may lead to ego clashes or issues if not well-placed.",
+    'Moon': "Moon Mahadasha affects emotions, mental peace, relationships, and creativity, often bringing fluctuations in mood and personal life.",
+    'Mars': "Mars Mahadasha brings energy, action, courage, and gains in property, but can cause aggression, accidents, or conflicts.",
+    'Rahu': "Rahu Mahadasha introduces sudden changes, ambition, material gains, and foreign opportunities, but may cause confusion, fears, or addictions.",
+    'Jupiter': "Jupiter Mahadasha promotes wisdom, growth, wealth, spirituality, and education, leading to expansion and good fortune, though health issues if weak.",
+    'Saturn': "Saturn Mahadasha emphasizes discipline, hard work, and long-term gains, but often involves delays, struggles, and isolation.",
+    'Mercury': "Mercury Mahadasha enhances intelligence, communication, business acumen, and learning, but can lead to nervous issues if afflicted."
+}
+
 def calculate_dasha(jd_birth, nak_index, nirayana_moon, jd_current):
     nak_deg = 360 / 27
     moon_pos = nirayana_moon % nak_deg
@@ -454,10 +466,12 @@ if st.button("Calculate Compatibility 💫"):
         with col1:
             st.write(f"**Bride:** {nak_names[b_nak-1]} ⭐ ({rashi_names[b_r]} ♈), Lagna: {rashi_names[b_l_r]} 🔄")
             st.write(f"Dasha: {lord_names[b_md]}/{lord_names[b_ad]} 🌙")
+            st.write(f"General Prediction for {lord_names[b_md]} Mahadasha: {mahadasha_predictions[lord_names[b_md]]}")
             st.write(f"Manglik: {'Yes 🔥' if b_mang else 'No 🌿'}")
         with col2:
             st.write(f"**Groom:** {nak_names[g_nak-1]} ⭐ ({rashi_names[g_r]} ♈), Lagna: {rashi_names[g_l_r]} 🔄")
             st.write(f"Dasha: {lord_names[g_md]}/{lord_names[g_ad]} 🌙")
+            st.write(f"General Prediction for {lord_names[g_md]} Mahadasha: {mahadasha_predictions[lord_names[g_md]]}")
             st.write(f"Manglik: {'Yes 🔥' if g_mang else 'No 🌿'}")
         
         mang_compat = (b_mang == g_mang)
@@ -465,6 +479,8 @@ if st.button("Calculate Compatibility 💫"):
             st.success("Manglik Dosha compatible! 🎉 No fiery clashes ahead. 🔥❤️")
         else:
             st.warning("Manglik mismatch! ⚠️ Remedies advised to balance energies. 🛡️")
+            st.subheader("What is Manglik Dosha? 🔍")
+            st.write("Manglik Dosha, also known as Mangal Dosha, is a concept in Vedic astrology where the planet Mars (Mangal) is positioned in certain houses (typically 1st, 2nd, 4th, 7th, 8th, or 12th) in a person's birth chart, potentially leading to challenges in marriage, such as conflicts, delays, or even health issues for the spouse. It is believed to create an imbalance of fiery energy that can affect marital harmony. While not everyone with this dosha experiences negative effects (as it depends on the overall chart), many seek remedies to mitigate its influence.")
         
         df, total = calculate_guna_milan(b_nak, b_r, g_nak, g_r)
         df['Obtained Point 🎯'] = df['Obtained Point 🎯'].apply(lambda x: int(x) if x == int(x) else x)
@@ -512,7 +528,15 @@ if st.button("Calculate Compatibility 💫"):
             st.header("Suggested Remedies 🛡️🙏")
             st.write("Stars guide, but rituals heal! ✨")
             if not mang_compat:
-                st.write("- Manglik Puja or Kumbh Vivah for fiery balance. 🔥🛡️")
+                st.subheader("Manglik Dosha Remedies 🙏")
+                st.write("1. **Marry Another Manglik**: One of the most straightforward remedies is for a Manglik individual to marry someone who also has Manglik Dosha. This is believed to balance the energies of Mars between the partners, neutralizing the dosha's impact on the marriage.")
+                st.write("2. **Kumbh Vivah (Symbolic Marriage)**: In this ritual, the Manglik person first 'marries' a clay pot (kumbh), a banana tree, a peepal tree, or a silver/gold idol of Lord Vishnu. The pot or object is then symbolically destroyed or discarded, which is thought to absorb the dosha's negative effects, allowing the person to proceed with a human marriage free from its influence. This is a popular pre-marriage remedy.")
+                st.write("3. **Mangal Dosh Nivaran Puja**: Perform a special puja dedicated to Mars, often at temples like those in Ujjain or dedicated to Lord Hanuman. This involves offerings of red flowers, red cloth, lentils, and jaggery, along with chanting specific mantras to appease Mars. It's recommended on Tuesdays.")
+                st.write("4. **Wearing Red Coral (Moonga) Gemstone**: Red coral is associated with Mars and is worn as a ring or pendant (typically on the ring finger) to strengthen positive Mars energy and reduce dosha effects. Wearing a cat's eye gemstone or consulting for suitability.")
+                st.write("5. **Fasting and Worship on Tuesdays**: Observe fasts on Tuesdays (Mangalvar), the day ruled by Mars. During the fast, worship Lord Hanuman or Lord Kartikeya (Murugan) by offering vermilion, sweets, and chanting the Hanuman Chalisa or Mangal Stotra. This is said to pacify Mars' aggressive influence.")
+                st.write("6. **Chanting Mantras and Japa**: Regularly chant the Gayatri Mantra, Mahamrityunjaya Mantra, or specific Mars mantras like 'Om Kram Kreem Kroum Sah Bhaumaya Namah' (108 times daily using a red sandalwood mala). This spiritual practice helps harmonize the dosha's energy.")
+                st.write("7. **Donations and Charity**: Donate items ruled by Mars, such as red lentils, copper utensils, sweets made from jaggery, or red clothes to the needy or Brahmins on Tuesdays. This act of karma is believed to reduce the dosha's malefic effects.")
+                st.write("8. **Wearing Rudraksha or Other Spiritual Items**: Some sources recommend wearing authentic Rudraksha beads (e.g., 3-mukhi or 11-mukhi) to naturally mitigate the dosha through spiritual energy.")
             if nadi_score_val == 0:
                 st.write("- Nadi Shanti Puja or Nadi Dosha Nivaran Puja to mitigate the dosha. ⚡🕉️")
                 st.write("- Chant Maha Mrityunjaya Mantra daily for health and harmony. 📿")
