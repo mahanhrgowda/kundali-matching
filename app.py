@@ -528,15 +528,7 @@ if st.button("Calculate Compatibility 💫"):
             st.header("Suggested Remedies 🛡️🙏")
             st.write("Stars guide, but rituals heal! ✨")
             if not mang_compat:
-                st.subheader("Manglik Dosha Remedies 🙏")
-                st.write("1. **Marry Another Manglik**: One of the most straightforward remedies is for a Manglik individual to marry someone who also has Manglik Dosha. This is believed to balance the energies of Mars between the partners, neutralizing the dosha's impact on the marriage.")
-                st.write("2. **Kumbh Vivah (Symbolic Marriage)**: In this ritual, the Manglik person first 'marries' a clay pot (kumbh), a banana tree, a peepal tree, or a silver/gold idol of Lord Vishnu. The pot or object is then symbolically destroyed or discarded, which is thought to absorb the dosha's negative effects, allowing the person to proceed with a human marriage free from its influence. This is a popular pre-marriage remedy.")
-                st.write("3. **Mangal Dosh Nivaran Puja**: Perform a special puja dedicated to Mars, often at temples like those in Ujjain or dedicated to Lord Hanuman. This involves offerings of red flowers, red cloth, lentils, and jaggery, along with chanting specific mantras to appease Mars. It's recommended on Tuesdays.")
-                st.write("4. **Wearing Red Coral (Moonga) Gemstone**: Red coral is associated with Mars and is worn as a ring or pendant (typically on the ring finger) to strengthen positive Mars energy and reduce dosha effects. Wearing a cat's eye gemstone or consulting for suitability.")
-                st.write("5. **Fasting and Worship on Tuesdays**: Observe fasts on Tuesdays (Mangalvar), the day ruled by Mars. During the fast, worship Lord Hanuman or Lord Kartikeya (Murugan) by offering vermilion, sweets, and chanting the Hanuman Chalisa or Mangal Stotra. This is said to pacify Mars' aggressive influence.")
-                st.write("6. **Chanting Mantras and Japa**: Regularly chant the Gayatri Mantra, Mahamrityunjaya Mantra, or specific Mars mantras like 'Om Kram Kreem Kroum Sah Bhaumaya Namah' (108 times daily using a red sandalwood mala). This spiritual practice helps harmonize the dosha's energy.")
-                st.write("7. **Donations and Charity**: Donate items ruled by Mars, such as red lentils, copper utensils, sweets made from jaggery, or red clothes to the needy or Brahmins on Tuesdays. This act of karma is believed to reduce the dosha's malefic effects.")
-                st.write("8. **Wearing Rudraksha or Other Spiritual Items**: Some sources recommend wearing authentic Rudraksha beads (e.g., 3-mukhi or 11-mukhi) to naturally mitigate the dosha through spiritual energy.")
+                st.write("- Manglik Puja or Kumbh Vivah for fiery balance. 🔥🛡️")
             if nadi_score_val == 0:
                 st.write("- Nadi Shanti Puja or Nadi Dosha Nivaran Puja to mitigate the dosha. ⚡🕉️")
                 st.write("- Chant Maha Mrityunjaya Mantra daily for health and harmony. 📿")
