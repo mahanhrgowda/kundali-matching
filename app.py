@@ -138,8 +138,37 @@ def get_astro_details(year, month, day, hour_local, min_local, sec_local, tz_str
 rashi_names = ["Mesha", "Vrishabha", "Mithuna", "Karka", "Simha", "Kanya", "Tula", "Vrishchika", "Dhanu", "Makara", "Kumbha", "Meena"]
 nak_names = ["Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashirsha", "Ardra", "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshta", "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"]
 
+varna_names = ["Brahmin", "Kshatriya", "Vaishya", "Shudra"]
+vashya_names = ["Chatuspad", "Dwipad", "Jalachara", "Vanchar", "Keet"]
+yoni_names = ["Horse", "Gaja", "Sheep", "Serpent", "Dog", "Cat", "Rat", "Buffalo", "Cow", "Tiger", "Hare", "Monkey", "Lion", "Mongoose"]
+planet_names = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+gana_names = ["Devata", "Manushya", "Rakshasa"]
+nadi_names = ["Adya", "Madhya", "Antya"]
+
+area_of_life = {
+    "Varna Koot": "Aptitude",
+    "Vashya Koot": "Amenability",
+    "Tara Koot": "Compassion",
+    "Yoni Koot": "Chemistry",
+    "Graha Maitri": "Affection",
+    "Gana Koot": "Temperament",
+    "Bhakoot Koot": "Love",
+    "Nadi Koot": "Progeny"
+}
+
+max_points = {
+    "Varna Koot": 1,
+    "Vashya Koot": 2,
+    "Tara Koot": 3,
+    "Yoni Koot": 4,
+    "Graha Maitri": 5,
+    "Gana Koot": 6,
+    "Bhakoot Koot": 7,
+    "Nadi Koot": 8
+}
+
 # Varna
-varna_rashi = [1, 3, 2, 0, 1, 2, 3, 1, 0, 3, 2, 0]  # 0 Brahmin (Karka, Dhanu, Meena), 1 Kshatriya (Mesha, Simha, Vrishchika), 2 Vaishya (Mithuna, Kanya, Kumbha), 3 Shudra (Vrishabha, Tula, Makara)
+varna_rashi = [1, 3, 2, 0, 1, 2, 3, 1, 0, 3, 2, 0]  
 def varna_score(r_b, r_g):
     v_b = varna_rashi[r_b]
     v_g = varna_rashi[r_g]
@@ -148,7 +177,7 @@ def varna_score(r_b, r_g):
     return 0
 
 # Vashya
-vashya_types = [0, 3, 1, 2, 2, 1, 3, 0, 1, 2, 1, 4]  # Chatuspad (0: Mesha, Vrishchika), Dwipad (1: Mithuna, Kanya, Dhanu, Kumbha), Jalchar (2: Karka, Simha), Vanchar (3: Vrishabha, Tula, Makara), Keet (4: Meena)
+vashya_types = [0, 3, 1, 2, 2, 1, 3, 0, 1, 2, 1, 2]  # Changed Meena to 2
 vashya_scores = {
     (0,0):2, (0,1):1, (0,2):0, (0,3):0, (0,4):0,
     (1,0):2, (1,1):2, (1,2):0, (1,3):0, (1,4):1,
@@ -161,7 +190,7 @@ def vashya_score(r_b, r_g):
     vg = vashya_types[r_g]
     return vashya_scores.get((vb, vg), 0)
 
-# Tara - average of both directions
+# Tara
 def tara_score(n_b, n_g):
     def get_tara(count):
         if count == 0: count = 27
@@ -175,9 +204,9 @@ def tara_score(n_b, n_g):
     count_bg = (n_g - n_b) % 27
     count_gb = (n_b - n_g) % 27
     score = (get_tara(count_bg) + get_tara(count_gb)) / 2
-    return round(score, 1)
+    return score
 
-# Yoni full matrix
+# Yoni
 yoni_map = {
     1: 0, 2:1, 3:2, 4:3, 5:3, 6:4, 7:5, 8:2, 9:5, 10:6, 11:6, 12:7, 13:8, 14:9, 15:8, 16:9, 17:10, 18:10, 19:4, 20:11, 21:12, 22:11, 23:13, 24:0, 25:13, 26:7, 27:1
 }
@@ -226,7 +255,7 @@ def graha_maitri_score(r_b, r_g):
     return 0
 
 # Gana
-gana_nak = [3,2,1,1,1,2,1,1,3,3,2,2,2,3,1,3,3,3,3,2,3,1,3,3,3,2,1]
+gana_nak = [1,2,3,2,1,2,1,1,3,3,2,2,1,3,1,3,1,3,3,2,2,1,3,3,2,2,1]
 def gana_score(n_b, n_g):
     gb = gana_nak[n_b-1]
     gg = gana_nak[n_g-1]
@@ -238,7 +267,7 @@ def gana_score(n_b, n_g):
 # Bhakoot
 def bhakoot_score(r_b, r_g):
     pos = (r_g - r_b + 12) % 12
-    if pos in [0,6,2,5,7,11]: return 0
+    if pos in [1,4,5,7,8,11]: return 0
     return 7
 
 # Nadi
@@ -247,18 +276,63 @@ def nadi_score(n_b, n_g):
     return 8 if nadi_nak[n_b-1] != nadi_nak[n_g-1] else 0
 
 def calculate_guna_milan(n_b, r_b, n_g, r_g):
-    scores = {
-        "Varna": varna_score(r_b, r_g),
-        "Vashya": vashya_score(r_b, r_g),
-        "Tara": tara_score(n_b, n_g),
-        "Yoni": yoni_score(n_b, n_g),
-        "Graha Maitri": graha_maitri_score(r_b, r_g),
-        "Gana": gana_score(n_b, n_g),
-        "Bhakoot": bhakoot_score(r_b, r_g),
-        "Nadi": nadi_score(n_b, n_g)
-    }
-    total = sum(scores.values())
-    return scores, total
+    data = []
+    i = 1
+
+    # Varna
+    v_b = varna_rashi[r_b]
+    v_g = varna_rashi[r_g]
+    score = varna_score(r_b, r_g)
+    data.append({"#": i, "Guna": "Varna Koot", "Girl": varna_names[v_b], "Boy": varna_names[v_g], "Obtained Point": score, "Maximum Point": max_points["Varna Koot"], "Area Of Life": area_of_life["Varna Koot"]})
+    i += 1
+
+    # Vashya
+    vb = vashya_types[r_b]
+    vg = vashya_types[r_g]
+    score = vashya_score(r_b, r_g)
+    data.append({"#": i, "Guna": "Vashya Koot", "Girl": vashya_names[vb], "Boy": vashya_names[vg], "Obtained Point": score, "Maximum Point": max_points["Vashya Koot"], "Area Of Life": area_of_life["Vashya Koot"]})
+    i += 1
+
+    # Tara
+    score = tara_score(n_b, n_g)
+    data.append({"#": i, "Guna": "Tara Koot", "Girl": nak_names[n_b-1], "Boy": nak_names[n_g-1], "Obtained Point": score, "Maximum Point": max_points["Tara Koot"], "Area Of Life": area_of_life["Tara Koot"]})
+    i += 1
+
+    # Yoni
+    y_b = yoni_map[n_b]
+    y_g = yoni_map[n_g]
+    score = yoni_score(n_b, n_g)
+    data.append({"#": i, "Guna": "Yoni Koot", "Girl": yoni_names[y_b], "Boy": yoni_names[y_g], "Obtained Point": score, "Maximum Point": max_points["Yoni Koot"], "Area Of Life": area_of_life["Yoni Koot"]})
+    i += 1
+
+    # Graha Maitri
+    lb = rashi_lords[r_b]
+    lg = rashi_lords[r_g]
+    score = graha_maitri_score(r_b, r_g)
+    data.append({"#": i, "Guna": "Graha Maitri", "Girl": planet_names[lb], "Boy": planet_names[lg], "Obtained Point": score, "Maximum Point": max_points["Graha Maitri"], "Area Of Life": area_of_life["Graha Maitri"]})
+    i += 1
+
+    # Gana
+    gb = gana_nak[n_b-1]
+    gg = gana_nak[n_g-1]
+    score = gana_score(n_b, n_g)
+    data.append({"#": i, "Guna": "Gana Koot", "Girl": gana_names[gb-1], "Boy": gana_names[gg-1], "Obtained Point": score, "Maximum Point": max_points["Gana Koot"], "Area Of Life": area_of_life["Gana Koot"]})
+    i += 1
+
+    # Bhakoot
+    score = bhakoot_score(r_b, r_g)
+    data.append({"#": i, "Guna": "Bhakoot Koot", "Girl": rashi_names[r_b], "Boy": rashi_names[r_g], "Obtained Point": score, "Maximum Point": max_points["Bhakoot Koot"], "Area Of Life": area_of_life["Bhakoot Koot"]})
+    i += 1
+
+    # Nadi
+    na_b = nadi_nak[n_b-1]
+    na_g = nadi_nak[n_g-1]
+    score = nadi_score(n_b, n_g)
+    data.append({"#": i, "Guna": "Nadi Koot", "Girl": nadi_names[na_b-1], "Boy": nadi_names[na_g-1], "Obtained Point": score, "Maximum Point": max_points["Nadi Koot"], "Area Of Life": area_of_life["Nadi Koot"]})
+
+    df = pd.DataFrame(data)
+    total = df["Obtained Point"].sum()
+    return df, total
 
 # Manglik with exceptions
 dosha_houses = [1,2,4,7,8,12]
@@ -320,7 +394,7 @@ bride_name = st.text_input("Bride's Name", "Bride")
 bride_date = st.date_input("Bride's DOB 📅", value=default_date)
 bride_time = st.time_input("Bride's TOB ⏰", value=default_time)
 bride_tz_list = sorted(list(zoneinfo.available_timezones()))
-bride_tz_index = bride_tz_list.index(default_tz)
+bride_tz_index = bride_tz_list.index(default_tz) if default_tz in bride_tz_list else 0
 bride_tz = st.selectbox("Bride's Timezone 🌍", options=bride_tz_list, index=bride_tz_index)
 bride_lat = st.number_input("Bride's Lat 📍", value=default_lat)
 bride_lon = st.number_input("Bride's Lon 📍", value=default_lon)
@@ -330,7 +404,7 @@ groom_name = st.text_input("Groom's Name", "Groom")
 groom_date = st.date_input("Groom's DOB 📅", value=default_date)
 groom_time = st.time_input("Groom's TOB ⏰", value=default_time)
 groom_tz_list = sorted(list(zoneinfo.available_timezones()))
-groom_tz_index = groom_tz_list.index(default_tz)
+groom_tz_index = groom_tz_list.index(default_tz) if default_tz in groom_tz_list else 0
 groom_tz = st.selectbox("Groom's Timezone 🌍", options=groom_tz_list, index=groom_tz_index)
 groom_lat = st.number_input("Groom's Lat 📍", value=default_lat)
 groom_lon = st.number_input("Groom's Lon 📍", value=default_lon)
@@ -370,12 +444,10 @@ if st.button("Calculate Compatibility 💫"):
         else:
             st.warning("Manglik mismatch! ⚠️ Remedies advised to balance energies. 🛡️")
         
-        scores, total = calculate_guna_milan(b_nak, b_r, g_nak, g_r)
-        df = pd.DataFrame(list(scores.items()), columns=['Koota', 'Score'])
-        st.write("### Ashtakoota Scores 📊🌟")
+        df, total = calculate_guna_milan(b_nak, b_r, g_nak, g_r)
+        st.write("### Guna Milan (Ashtakoot Points) 📊🌟")
         st.table(df)
-        st.bar_chart(df.set_index('Koota')['Score'])
-        st.write(f"**Total Guna: {total}/36 💖**")
+        st.write(f"**Total Guna Milan Points: {total}/36 💖**")
         
         if total >= 28:
             st.success("Excellent compatibility! Stars align perfectly! 🌟✨⭐")
@@ -389,19 +461,21 @@ if st.button("Calculate Compatibility 💫"):
         st.write("Dive into the magic of each Koota! Each factor reveals a cosmic secret for your union. 🌌💫")
 
         explanations = {
-            "Varna": "Spiritual harmony & ego balance! 🧘‍♀️🧘‍♂️ Bride's caste (Varna) should match or elevate groom's for respect & unity. Max 1 pt. 📏",
-            "Vashya": "Mutual attraction & control vibes! 💘🔥 Rashis grouped as animals—compatible ones spark passion without power plays. Max 2 pts. 🐾",
-            "Tara": "Health, luck & destiny stars! 🌟⭐ Count Nakshatras for auspicious Taras—good ones promise prosperity & long life. Max 3 pts. 🎯",
-            "Yoni": "Intimate & physical chemistry! 🐯❤️ Animal symbols from Nakshatras—matching Yonis ensure fiery bedroom bliss. Max 4 pts. 🔥",
+            "Varna Koot": "Spiritual harmony & ego balance! 🧘‍♀️🧘‍♂️ Bride's caste (Varna) should match or elevate groom's for respect & unity. Max 1 pt. 📏",
+            "Vashya Koot": "Mutual attraction & control vibes! 💘🔥 Rashis grouped as animals—compatible ones spark passion without power plays. Max 2 pts. 🐾",
+            "Tara Koot": "Health, luck & destiny stars! 🌟⭐ Count Nakshatras for auspicious Taras—good ones promise prosperity & long life. Max 3 pts. 🎯",
+            "Yoni Koot": "Intimate & physical chemistry! 🐯❤️ Animal symbols from Nakshatras—matching Yonis ensure fiery bedroom bliss. Max 4 pts. 🔥",
             "Graha Maitri": "Mental & friendship sync! 🧠🤝 Planetary lords' bonds—friends mean deep talks & shared dreams. Max 5 pts. 💭",
-            "Gana": "Temperament tango! 😊😈 Deva (gentle), Manushya (balanced), Rakshasa (bold)—harmonious Ganas avoid clashes. Max 6 pts. 🎭",
-            "Bhakoot": "Emotional & family flow! 👨‍👩‍👧‍👦💕 Rashi positions for love, wealth & kids—auspicious ones build strong homes. Max 7 pts. 🏠",
-            "Nadi": "Health, genes & progeny pulse! 👶🩺 Energy channels—different Nadis prevent health woes & bless with healthy heirs. Max 8 pts. ⚡"
+            "Gana Koot": "Temperament tango! 😊😈 Deva (gentle), Manushya (balanced), Rakshasa (bold)—harmonious Ganas avoid clashes. Max 6 pts. 🎭",
+            "Bhakoot Koot": "Emotional & family flow! 👨‍👩‍👧‍👦💕 Rashi positions for love, wealth & kids—auspicious ones build strong homes. Max 7 pts. 🏠",
+            "Nadi Koot": "Health, genes & progeny pulse! 👶🩺 Energy channels—different Nadis prevent health woes & bless with healthy heirs. Max 8 pts. ⚡"
         }
 
-        for koota, score in scores.items():
+        for index, row in df.iterrows():
+            koota = row["Guna"]
+            score = row["Obtained Point"]
             exp = explanations.get(koota, "Cosmic mystery! 🔮")
-            st.markdown(f"**{koota} ({score}/max pts) 🎪:** {exp}")
+            st.markdown(f"**{koota} ({score}/{row['Maximum Point']}) 🎪:** {exp}")
         
         # Remedies
         if total < 18 or not mang_compat:
@@ -414,7 +488,7 @@ if st.button("Calculate Compatibility 💫"):
         
         # Export
         export_df = df.copy()
-        export_df.loc[len(export_df)] = ['Total', total]
+        export_df.loc[len(export_df)] = ['', 'Total Guna Milan Points', '', '', total, 36, '']
         buf = io.StringIO()
         export_df.to_csv(buf, index=False)
         st.download_button("Download Cosmic Report CSV 📥", buf.getvalue().encode(), "kundali.csv")
