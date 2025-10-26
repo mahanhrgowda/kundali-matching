@@ -33,52 +33,6 @@ def greg_to_jd(year, month, day, ut_hour, ut_min, ut_sec):
     jd = c + day + e + f - 1524.5 + (ut_hour + ut_min / 60 + ut_sec / 3600) / 24
     return jd
 
-def get_sun_long(d):
-    T = d / 36525.0
-    M = mod360(357.52910 + 35999.05030 * T - 0.0001559 * T**2 - 0.00000048 * T**3)
-    L0 = mod360(280.46645 + 36000.76983 * T + 0.0003032 * T**2)
-    DL = (1.914600 - 0.004817 * T - 0.000014 * T**2) * sin_d(M) + \
-         (0.019993 - 0.000101 * T) * sin_d(2 * M) + \
-         0.000290 * sin_d(3 * M)
-    return mod360(L0 + DL)
-
-def get_moon_long(d):
-    T = d / 36525.0
-    L0 = mod360(218.31617 + 481267.88088 * T)
-    M = mod360(134.96292 + 477198.86753 * T)
-    Msun = mod360(357.52543 + 35999.04944 * T)
-    F = mod360(93.27283 + 483202.01873 * T)
-    D = mod360(297.85027 + 445267.11135 * T)
-    pert = 0.0
-    pert += 22640 * sin_d(M)
-    pert += 769 * sin_d(2 * M)
-    pert += -4586 * sin_d(M - 2 * D)
-    pert += 2370 * sin_d(2 * D)
-    pert += -668 * sin_d(Msun)
-    pert += -412 * sin_d(2 * F)
-    pert += -125 * sin_d(D)
-    pert += -212 * sin_d(2 * M - 2 * D)
-    pert += -206 * sin_d(M + Msun - 2 * D)
-    pert += 192 * sin_d(M + 2 * D)
-    pert += -165 * sin_d(Msun - 2 * D)
-    pert += 148 * sin_d(L0 - Msun)
-    pert += -110 * sin_d(M + Msun)
-    pert += -55 * sin_d(2 * F - 2 * D)
-    return mod360(L0 + pert / 3600.0)
-
-def get_mars_long(d):
-    T = d / 36525.0
-    L = mod360(49.5574 + 19080.347 * T)
-    M = mod360(19.3732 + 19102.057 * T)
-    e = 0.0933 + 2.516e-9 * T
-    M_rad = math.radians(M)
-    E = M_rad
-    for _ in range(5):
-        E = M_rad + e * math.sin(E)
-    nu = 2 * math.atan2(math.sqrt(1 + e) * math.sin(E / 2), math.sqrt(1 - e) * math.cos(E / 2))
-    lon_hel = mod360(math.degrees(nu) + 286.5016 + 2.92961e-5 * d)
-    return lon_hel
-
 def get_ayanamsa_lahiri(d):
     t = d / 36525.0
     ayan = 23.853024 + t * (50.2388475 / 3600) + t**2 * (-0.0000001267)
@@ -95,9 +49,126 @@ def get_lst(jd, lon):
     lst = mod360(gmst + lon)
     return lst
 
+# Planetary elements and computation
+def compute_helio(N, i, w, a, e, M):
+    E = M + math.degrees(e * math.sin(math.radians(M)) * (1.0 + e * math.cos(math.radians(M))))
+    for _ in range(10):
+        E_new = E - (E - math.degrees(e * math.sin(math.radians(E))) - M) / (1 - e * math.cos(math.radians(E)))
+        if abs(E_new - E) < 1e-6:
+            break
+        E = E_new
+    xv = math.cos(math.radians(E)) - e
+    yv = math.sin(math.radians(E)) * math.sqrt(1.0 - e*e)
+    v = atan2_d(yv, xv)
+    r = math.sqrt(xv**2 + yv**2)
+    lonsun = mod360(v + w)
+    return lonsun, r
+
+def get_mercury_helio(d):
+    N = 48.3313 + 3.24587E-5 * d
+    i = 7.0047 + 5.00E-8 * d
+    w = 29.1241 + 1.01444E-5 * d
+    a = 0.387098
+    e = 0.205635 + 5.59E-10 * d
+    M = mod360(168.6562 + 4.0923344368 * d)
+    return compute_helio(N, i, w, a, e, M)
+
+def get_venus_helio(d):
+    N = 76.6799 + 2.46590E-5 * d
+    i = 3.3946 + 2.75E-8 * d
+    w = 54.8910 + 1.38374E-5 * d
+    a = 0.723330
+    e = 0.006773 - 1.302E-9 * d
+    M = mod360(48.0052 + 1.6021302244 * d)
+    return compute_helio(N, i, w, a, e, M)
+
+def get_earth_helio(d):
+    N = 0.0
+    i = 0.0
+    w = 282.9404 + 4.70935E-5 * d
+    a = 1.000000
+    e = 0.016709 - 1.151E-9 * d
+    M = mod360(356.0470 + 0.9856002585 * d)
+    return compute_helio(N, i, w, a, e, M)
+
+def get_mars_helio(d):
+    N = 49.5574 + 2.11081E-5 * d
+    i = 1.8497 - 1.78E-8 * d
+    w = 286.5016 + 2.92961E-5 * d
+    a = 1.523688
+    e = 0.093405 + 2.516E-9 * d
+    M = mod360(18.6021 + 0.5240207766 * d)
+    return compute_helio(N, i, w, a, e, M)
+
+def get_jupiter_helio(d):
+    N = 100.4542 + 2.76854E-5 * d
+    i = 1.3030 - 1.557E-7 * d
+    w = 273.8777 + 1.64505E-5 * d
+    a = 5.20256
+    e = 0.048498 + 4.469E-9 * d
+    M = mod360(19.8950 + 0.0830853001 * d)
+    lon, r = compute_helio(N, i, w, a, e, M)
+    # Perturbations
+    Ms = mod360(316.9670 + 0.0334442282 * d)
+    delta_lon = -0.332 * math.sin(math.radians(2*M - 5*Ms - 67.6)) - 0.056 * math.sin(math.radians(2*M - 2*Ms + 21)) + 0.042 * math.sin(math.radians(3*M - 5*Ms + 21)) - 0.036 * math.sin(math.radians(M - 2*Ms)) + 0.022 * math.cos(math.radians(M - Ms)) + 0.023 * math.sin(math.radians(2*M - 3*Ms + 52)) - 0.016 * math.sin(math.radians(M - 5*Ms - 69))
+    lon = mod360(lon + delta_lon)
+    return lon, r, M
+
+def get_saturn_helio(d):
+    N = 113.6634 + 2.38980E-5 * d
+    i = 2.4886 - 1.081E-7 * d
+    w = 339.3939 + 2.97661E-5 * d
+    a = 9.55475
+    e = 0.055546 - 9.499E-9 * d
+    M = mod360(316.9670 + 0.0334442282 * d)
+    lon, r = compute_helio(N, i, w, a, e, M)
+    # Perturbations
+    Mj = mod360(19.8950 + 0.0830853001 * d)
+    delta_lon = 0.812 * math.sin(math.radians(2*Mj - 5*M - 67.6)) - 0.229 * math.cos(math.radians(2*Mj - 4*M - 2)) + 0.119 * math.sin(math.radians(Mj - 2*M - 3)) + 0.046 * math.sin(math.radians(2*Mj - 6*M - 69)) + 0.014 * math.sin(math.radians(Mj - 3*M + 32))
+    lon = mod360(lon + delta_lon)
+    return lon, r, M
+
+def get_rahu_long(d):
+    omega = mod360(125.0445 - 0.05295377 * d)
+    return omega
+
+def get_ketu_long(d):
+    return mod360(get_rahu_long(d) + 180)
+
+def get_geo_long(helio_lon, r, earth_lon, earth_r):
+    xhel = r * math.cos(math.radians(helio_lon))
+    yhel = r * math.sin(math.radians(helio_lon))
+    xearth = earth_r * math.cos(math.radians(earth_lon))
+    yearth = earth_r * math.sin(math.radians(earth_lon))
+    xgeo = xhel - xearth
+    ygeo = yhel - yearth
+    geo_lon = mod360(atan2_d(ygeo, xgeo))
+    return geo_lon
+
+def get_planet_rashi_nak(longitude):
+    rashi = math.floor(longitude / 30)
+    nak = math.floor(longitude / (360 / 27)) + 1
+    return rashi_names[rashi], nak_names[nak-1]
+
+def get_aspects(planets):
+    aspects = []
+    aspect_angles = {0: 'Conjunction', 60: 'Sextile', 90: 'Square', 120: 'Trine', 180: 'Opposition'}
+    orb = 8  # degrees allowance
+    planet_list = list(planets.keys())
+    for i in range(len(planet_list)):
+        for j in range(i+1, len(planet_list)):
+            p1 = planet_list[i]
+            p2 = planet_list[j]
+            diff = min(abs(planets[p1] - planets[p2]), 360 - abs(planets[p1] - planets[p2]))
+            for angle in aspect_angles:
+                if abs(diff - angle) <= orb:
+                    aspects.append(f"{p1} {aspect_angles[angle]} {p2} (orb: {abs(diff - angle):.1f}°)")
+    return aspects
+
 def get_astro_details(year, month, day, hour_local, min_local, sec_local, tz_str, lat, lon):
     if year < 1900 or year > 2100:
-        raise ValueError("Year must be between 1900 and 2100")
+        st.error("Year must be between 1900 and 2100")
+        return None
     dt_local = datetime(year, month, day, hour_local, min_local, sec_local)
     tz_info = zoneinfo.ZoneInfo(tz_str)
     dt_tz = dt_local.replace(tzinfo=tz_info)
@@ -115,16 +186,9 @@ def get_astro_details(year, month, day, hour_local, min_local, sec_local, tz_str
         year, month, day = temp_dt.year, temp_dt.month, temp_dt.day
     jd = greg_to_jd(year, month, day, ut_hour, ut_min, ut_sec)
     d = jd - 2451545.0
-    sun_long = get_sun_long(d)
-    moon_long = get_moon_long(d)
-    mars_long = get_mars_long(d)
     ayanamsa = get_ayanamsa_lahiri(d)
-    nirayana_sun = mod360(sun_long - ayanamsa)
-    nirayana_moon = mod360(moon_long - ayanamsa)
-    nirayana_mars = mod360(mars_long - ayanamsa)
-    nak_index = math.floor(nirayana_moon / (360 / 27)) + 1
-    rashi_index = math.floor(nirayana_moon / 30)
-    # Lagna calculation (simplified)
+    
+    # Lagna
     eps = 23.439281 - 0.0000004 * (d / 36525)
     lst = get_lst(jd, lon)
     ra = lst
@@ -133,8 +197,85 @@ def get_astro_details(year, month, day, hour_local, min_local, sec_local, tz_str
     if cos_d(ra) < 0:
         lagna_trop += 180
     nirayana_lagna = mod360(lagna_trop - ayanamsa)
+    
+    # Earth helio for geo calculations
+    earth_lon, earth_r = get_earth_helio(d)
+    
+    # Sun (geocentric = earth helio + 180 - ayanamsa)
+    nirayana_sun = mod360(earth_lon + 180 - ayanamsa)
+    
+    # Moon
+    moon_long = get_moon_long(d)
+    nirayana_moon = mod360(moon_long - ayanamsa)
+    nak_index = math.floor(nirayana_moon / (360 / 27)) + 1
+    rashi_index = math.floor(nirayana_moon / 30)
+    
+    # Mercury
+    merc_helio_lon, merc_r = get_mercury_helio(d)
+    merc_geo_lon = get_geo_long(merc_helio_lon, merc_r, earth_lon, earth_r)
+    nirayana_merc = mod360(merc_geo_lon - ayanamsa)
+    
+    # Venus
+    ven_helio_lon, ven_r = get_venus_helio(d)
+    ven_geo_lon = get_geo_long(ven_helio_lon, ven_r, earth_lon, earth_r)
+    nirayana_ven = mod360(ven_geo_lon - ayanamsa)
+    
+    # Mars
+    mars_helio_lon, mars_r = get_mars_helio(d)
+    mars_geo_lon = get_geo_long(mars_helio_lon, mars_r, earth_lon, earth_r)
+    nirayana_mars = mod360(mars_geo_lon - ayanamsa)
+    
+    # Jupiter
+    jup_helio_lon, jup_r, _ = get_jupiter_helio(d)
+    jup_geo_lon = get_geo_long(jup_helio_lon, jup_r, earth_lon, earth_r)
+    nirayana_jup = mod360(jup_geo_lon - ayanamsa)
+    
+    # Saturn
+    sat_helio_lon, sat_r, _ = get_saturn_helio(d)
+    sat_geo_lon = get_geo_long(sat_helio_lon, sat_r, earth_lon, earth_r)
+    nirayana_sat = mod360(sat_geo_lon - ayanamsa)
+    
+    # Rahu
+    rahu_long = get_rahu_long(d)
+    nirayana_rahu = mod360(rahu_long - ayanamsa)
+    
+    # Ketu
+    ketu_long = get_ketu_long(d)
+    nirayana_ketu = mod360(ketu_long - ayanamsa)
+    
+    # Planets dict for aspects
+    planets = {
+        'Lagna': nirayana_lagna,
+        'Sun': nirayana_sun,
+        'Moon': nirayana_moon,
+        'Mercury': nirayana_merc,
+        'Venus': nirayana_ven,
+        'Mars': nirayana_mars,
+        'Jupiter': nirayana_jup,
+        'Saturn': nirayana_sat,
+        'Rahu': nirayana_rahu,
+        'Ketu': nirayana_ketu
+    }
+    
+    aspects = get_aspects(planets)
+    
+    # Birth chart data
+    birth_chart = {
+        'Lagna': (nirayana_lagna, get_planet_rashi_nak(nirayana_lagna)),
+        'Sun': (nirayana_sun, get_planet_rashi_nak(nirayana_sun)),
+        'Moon': (nirayana_moon, get_planet_rashi_nak(nirayana_moon)),
+        'Mercury': (nirayana_merc, get_planet_rashi_nak(nirayana_merc)),
+        'Venus': (nirayana_ven, get_planet_rashi_nak(nirayana_ven)),
+        'Mars': (nirayana_mars, get_planet_rashi_nak(nirayana_mars)),
+        'Jupiter': (nirayana_jup, get_planet_rashi_nak(nirayana_jup)),
+        'Saturn': (nirayana_sat, get_planet_rashi_nak(nirayana_sat)),
+        'Rahu': (nirayana_rahu, get_planet_rashi_nak(nirayana_rahu)),
+        'Ketu': (nirayana_ketu, get_planet_rashi_nak(nirayana_ketu))
+    }
+    
     lagna_rashi = math.floor(nirayana_lagna / 30)
-    return jd, nak_index, rashi_index, nirayana_moon, nirayana_mars, nirayana_lagna, lagna_rashi
+    
+    return jd, nak_index, rashi_index, nirayana_moon, nirayana_mars, nirayana_lagna, lagna_rashi, birth_chart, aspects
 
 # Ashtakoota accurate implementation
 rashi_names = ["Mesha", "Vrishabha", "Mithuna", "Karka", "Simha", "Kanya", "Tula", "Vrishchika", "Dhanu", "Makara", "Kumbha", "Meena"]
@@ -428,7 +569,7 @@ default_lon = 75.77
 st.header("Bride's Details 👰")
 bride_name = st.text_input("Bride's Name", "Bride")
 bride_date = st.date_input("Bride's DOB 📅", value=default_date, min_value=date(1900,1,1), max_value=date(2100,12,31))
-bride_time = st.time_input("Bride's TOB ⏰", value=default_time)
+bride_time = st.time_input("Bride's TOB ⏰", value=default_time, step=60)
 bride_tz_list = sorted(list(zoneinfo.available_timezones()))
 bride_tz_index = bride_tz_list.index(default_tz) if default_tz in bride_tz_list else 0
 bride_tz = st.selectbox("Bride's Timezone 🌍", options=bride_tz_list, index=bride_tz_index)
@@ -438,7 +579,7 @@ bride_lon = st.number_input("Bride's Lon 📍", value=default_lon)
 st.header("Groom's Details 🤵")
 groom_name = st.text_input("Groom's Name", "Groom")
 groom_date = st.date_input("Groom's DOB 📅", value=default_date, min_value=date(1900,1,1), max_value=date(2100,12,31))
-groom_time = st.time_input("Groom's TOB ⏰", value=time(12, 27))
+groom_time = st.time_input("Groom's TOB ⏰", value=default_time, step=60)
 groom_tz_list = sorted(list(zoneinfo.available_timezones()))
 groom_tz_index = groom_tz_list.index(default_tz) if default_tz in groom_tz_list else 0
 groom_tz = st.selectbox("Groom's Timezone 🌍", options=groom_tz_list, index=groom_tz_index)
@@ -453,12 +594,18 @@ if st.button("Calculate Compatibility 💫"):
         st.error("Birth dates must be in the past! ⏳")
     else:
         # Bride
-        b_jd, b_nak, b_r, b_moon, b_mars, b_lagna, b_l_r = get_astro_details(bride_date.year, bride_date.month, bride_date.day, bride_time.hour, bride_time.minute, 0, bride_tz, bride_lat, bride_lon)
+        b_result = get_astro_details(bride_date.year, bride_date.month, bride_date.day, bride_time.hour, bride_time.minute, 0, bride_tz, bride_lat, bride_lon)
+        if b_result is None:
+            st.stop()
+        b_jd, b_nak, b_r, b_moon, b_mars, b_lagna, b_l_r, b_birth_chart, b_aspects = b_result
         b_md, b_ad = calculate_dasha(b_jd, b_nak, b_moon, current_jd)
         b_mang = is_manglik(math.floor(b_mars / 30), b_l_r, b_r)
         
         # Groom
-        g_jd, g_nak, g_r, g_moon, g_mars, g_lagna, g_l_r = get_astro_details(groom_date.year, groom_date.month, groom_date.day, groom_time.hour, groom_time.minute, 0, groom_tz, groom_lat, groom_lon)
+        g_result = get_astro_details(groom_date.year, groom_date.month, groom_date.day, groom_time.hour, groom_time.minute, 0, groom_tz, groom_lat, groom_lon)
+        if g_result is None:
+            st.stop()
+        g_jd, g_nak, g_r, g_moon, g_mars, g_lagna, g_l_r, g_birth_chart, g_aspects = g_result
         g_md, g_ad = calculate_dasha(g_jd, g_nak, g_moon, current_jd)
         g_mang = is_manglik(math.floor(g_mars / 30), g_l_r, g_r)
         
@@ -504,6 +651,22 @@ if st.button("Calculate Compatibility 💫"):
         else:
             st.warning("Consult astrologer for deeper insights. 🔮📜")
 
+        st.subheader("Bride's Birth Chart 📜")
+        b_chart_df = pd.DataFrame([{'Planet': k, 'Longitude': v[0], 'Rashi': v[1][0], 'Nakshatra': v[1][1]} for k, v in b_birth_chart.items()])
+        st.table(b_chart_df)
+        
+        st.subheader("Bride's Planetary Aspects 🔄")
+        for aspect in b_aspects:
+            st.write(aspect)
+        
+        st.subheader("Groom's Birth Chart 📜")
+        g_chart_df = pd.DataFrame([{'Planet': k, 'Longitude': v[0], 'Rashi': v[1][0], 'Nakshatra': v[1][1]} for k, v in g_birth_chart.items()])
+        st.table(g_chart_df)
+        
+        st.subheader("Groom's Planetary Aspects 🔄")
+        for aspect in g_aspects:
+            st.write(aspect)
+        
         # Ashtakoota Explanations with Emojis
         st.header("Ashtakoota Explanations 🔍✨")
         st.write("Dive into the magic of each Koota! Each factor reveals a cosmic secret for your union. 🌌💫")
